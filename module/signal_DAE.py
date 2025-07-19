@@ -280,95 +280,6 @@ class MutiFusion1D(nn.Module):
 
         return h1, m, l1
 
-# 混合注意力机制
-# class ChannelAttention(nn.Module):
-#     def __init__(self, in_channels, reduction_ratio=16):
-#         super(ChannelAttention, self).__init__()
-#         self.avg_pool = nn.AdaptiveAvgPool2d(1)
-#         self.fc1 = nn.Linear(in_channels, in_channels // reduction_ratio)
-#         self.fc2 = nn.Linear(in_channels // reduction_ratio, in_channels)
-#         self.sigmoid = nn.Sigmoid()
-#
-#     def forward(self, x):
-#         batch_size, num_channels, _, _ = x.size()
-#         y = self.avg_pool(x).view(batch_size, num_channels)
-#         y = self.fc1(y)
-#         y = F.relu(y)
-#         y = self.fc2(y)
-#         y = self.sigmoid(y)
-#         y = y.view(batch_size, num_channels, 1, 1)
-#         return x * y
-# class SpatialAttention(nn.Module):
-#     def __init__(self):
-#         super(SpatialAttention, self).__init__()
-#         self.conv1 = nn.Conv2d(2, 1, kernel_size=7, stride=1, padding=3)
-#         self.sigmoid = nn.Sigmoid()
-#
-#     def forward(self, x):
-#         avg_pool = torch.mean(x, dim=1, keepdim=True)
-#         max_pool, _ = torch.max(x, dim=1, keepdim=True)
-#         y = torch.cat([avg_pool, max_pool], dim=1)
-#         y = self.conv1(y)
-#         y = self.sigmoid(y)
-#         return x * y
-# class CBAM(nn.Module):
-#     def __init__(self, in_channels):
-#         super(CBAM, self).__init__()
-#         self.channel_attention = ChannelAttention(in_channels)
-#         self.spatial_attention = SpatialAttention()
-#
-#     def forward(self, x):
-#         residual = x  # 保存输入的残差连接
-#         x = self.channel_attention(x)
-#         x = self.spatial_attention(x)
-#         x = x + residual  # 残差连接
-#         return x
-#
-# class ChannelAttention1D(nn.Module):
-#     def __init__(self, in_channels, reduction_ratio=16):
-#         super(ChannelAttention1D, self).__init__()
-#         self.avg_pool = nn.AdaptiveAvgPool1d(1)  # 1D 平均池化
-#         self.fc1 = nn.Linear(in_channels, in_channels // reduction_ratio)
-#         self.fc2 = nn.Linear(in_channels // reduction_ratio, in_channels)
-#         self.sigmoid = nn.Sigmoid()
-#
-#     def forward(self, x):
-#         batch_size, num_channels, _ = x.size()
-#         # 1D 平均池化并展平
-#         y = self.avg_pool(x).view(batch_size, num_channels)
-#         y = self.fc1(y)
-#         y = F.relu(y)
-#         y = self.fc2(y)
-#         y = self.sigmoid(y)
-#         y = y.view(batch_size, num_channels, 1)  # 变回 [B, C, 1] 以进行广播
-#         return x * y
-# class SpatialAttention1D(nn.Module):
-#     def __init__(self):
-#         super(SpatialAttention1D, self).__init__()
-#         self.conv1 = nn.Conv1d(2, 1, kernel_size=7, stride=1, padding=3)
-#         self.sigmoid = nn.Sigmoid()
-#
-#     def forward(self, x):
-#         # 计算通道维度上的平均池化和最大池化
-#         avg_pool = torch.mean(x, dim=1, keepdim=True)  # [B, 1, L]
-#         max_pool, _ = torch.max(x, dim=1, keepdim=True)  # [B, 1, L]
-#         y = torch.cat([avg_pool, max_pool], dim=1)  # [B, 2, L]
-#         y = self.conv1(y)
-#         y = self.sigmoid(y)
-#         return x * y
-# class CBAM1D(nn.Module):
-#     def __init__(self, in_channels):
-#         super(CBAM1D, self).__init__()
-#         self.channel_attention = ChannelAttention1D(in_channels)
-#         self.spatial_attention = SpatialAttention1D()
-#
-#     def forward(self, x):
-#         residual = x  # 保存输入的残差连接
-#         x = self.channel_attention(x)
-#         x = self.spatial_attention(x)
-#         x = x + residual  # 残差连接
-#         return x
-
 # 注意力机制融合
 class AttentionFusionModule(nn.Module):
     def __init__(self, high_res_channels, low_res_channels):
@@ -726,10 +637,10 @@ class LSTM_CNN_SAM(nn.Module):
             BasicBlock(256, 256, 1),
         )
         # 4. Attention Layer
-        # self.conv_attention = nn.Conv1d(in_channels=256,
-        #                                 out_channels=256,
-        #                                 kernel_size=3,
-        #                                 padding=1)
+        self.conv_attention = nn.Conv1d(in_channels=256,
+                                        out_channels=256,
+                                        kernel_size=3,
+                                        padding=1)
         self.tanh = nn.Tanh()
         self.softmax = nn.Softmax(dim=-1)
 
@@ -761,7 +672,7 @@ class LSTM_CNN_SAM(nn.Module):
         x = x.permute(0, 2, 1)
 
         # Apply Attention Layer
-        # x = self.attention(x)
+        x = self.attention(x)
 
         x = self.atten(x)
 
