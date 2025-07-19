@@ -7,22 +7,18 @@ from module.signal_DAE import LSTM_CNN_SAM
 from matplotlib import font_manager as fm
 
 # 设置 Times New Roman 字体路径
-times_path = "/home/ll/.fonts/TimesNewRoman/Times New Roman.ttf"  # 根据你系统的字体路径调整
+times_path = "/home/.fonts/TimesNewRoman/Times New Roman.ttf"  # 根据你系统的字体路径调整
 times_font = fm.FontProperties(fname=times_path)
 
 # **调制类型定义**
-modulation_types = ['OOK', '4ASK', 'BPSK', 'QPSK', '8PSK', '16QAM', 'AM-SSB-SC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
-# modulation_types = ['OOK', '4ASK', '8ASK', 'BPSK', 'QPSK', '8PSK', '16PSK', '32PSK', '16APSK', '32APSK', '64APSK', '128APSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', 'AM-SSB-WC', 'AM-SSB-SC', 'AM-DSB-WC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
-
+modulation_types = ['OOK', '4ASK', '8ASK', 'BPSK', 'QPSK', '8PSK', '16PSK', '32PSK', '16APSK', '32APSK', '64APSK', '128APSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', 'AM-SSB-WC', 'AM-SSB-SC', 'AM-DSB-WC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
 label_map = {mod: i for i, mod in enumerate(modulation_types)}
 
 # **模型加载**
-# model_path = "../result/24classes/CNN_LSTM_SAM/CNN_LSTM_SAM_38_45.pth"
-model_path = "../result/11classes/CNN_LSTM_SAM/CNN_LSTM_SAM_58_19.pth"
+model_path = "../result/model.pth"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = LSTM_CNN_SAM(num_classes=11, lstm_layers=4)
-# model = LSTM_CNN_SAM(num_classes=24, lstm_layers=4)
+model = LSTM_CNN_SAM()
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.to(device)
 model.eval()
@@ -40,7 +36,6 @@ cols = 3  # 每行显示 3 张图
 rows = (num_snr + cols - 1) // cols  # 计算行数
 
 fig, axes = plt.subplots(rows, cols, figsize=(2.3 *cols, 2 * rows))
-# fig, axes = plt.subplots(rows, cols, figsize=(2.5 *cols, 2.1 * rows))
 axes = axes.flatten()  # 展平以便索引
 
 # **t-SNE 降维 & 可视化**
@@ -116,7 +111,5 @@ fig.legend(handles, modulation_types, loc="lower center", prop=times_font, fonts
 
 # **调整布局 & 保存**
 plt.tight_layout(rect=[0, 0.07, 1, 1])  # 留出图例位置
-# plt.tight_layout(rect=[0, 0.15, 1, 1])  # 留出图例位置
-plt.savefig("11_tsne.png", dpi=600)  # **保存图片**
-# plt.savefig("24_tsne.png", dpi=600)  # **保存图片**
+plt.savefig("11_tsne.png", dpi=300)  # **保存图片**
 plt.show()
