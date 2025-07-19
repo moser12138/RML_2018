@@ -19,8 +19,8 @@ simu_path = "/home/ll/.fonts/simsun/simsun.ttc"
 times_font = fm.FontProperties(fname=times_path)    # 英文 Times New Roman
 simsun_font = fm.FontProperties(fname=simu_path)    # 中文 宋体
 
-modulation_types = ['OOK', '4ASK', 'BPSK', 'QPSK', '8PSK', '16QAM', 'AM-SSB-SC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
-# modulation_types = ['OOK', '4ASK', '8ASK', 'BPSK', 'QPSK', '8PSK', '16PSK', '32PSK', '16APSK', '32APSK', '64APSK', '128APSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', 'AM-SSB-WC', 'AM-SSB-SC', 'AM-DSB-WC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
+# modulation_types = ['OOK', '4ASK', 'BPSK', 'QPSK', '8PSK', '16QAM', 'AM-SSB-SC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
+modulation_types = ['OOK', '4ASK', '8ASK', 'BPSK', 'QPSK', '8PSK', '16PSK', '32PSK', '16APSK', '32APSK', '64APSK', '128APSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', 'AM-SSB-WC', 'AM-SSB-SC', 'AM-DSB-WC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
 
 
 class DualModalityDataset(Dataset):
@@ -104,12 +104,10 @@ test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 # 加载模型并设置设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# model = LSTM_CNN_SAM(num_classes=24, lstm_layers=4).to(device)
-model = LSTM_CNN_SAM(num_classes=11, lstm_layers=4).to(device)
+model = LSTM_CNN_SAM().to(device)
 
 # 加载模型权重
-# model.load_state_dict(torch.load('../result/24classes/CNN_LSTM_SAM/CNN_LSTM_SAM_38_45.pth', map_location=device))
-model.load_state_dict(torch.load('../result/11classes/CNN_LSTM_SAM/CNN_LSTM_SAM_58_19.pth', map_location=device))
+model.load_state_dict(torch.load('../model.pth', map_location=device))
 model.eval()
 
 # 定义保存预测值和真实标签的列表
@@ -137,7 +135,6 @@ cm = confusion_matrix(all_labels, all_preds)
 
 # 可视化并保存不带数字的混淆矩阵
 plt.figure(figsize=(10, 8))
-# ax = sns.heatmap(cm, annot=False, cmap='Blues', xticklabels=modulation_types, yticklabels=modulation_types, cbar=False)
 ax = sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=modulation_types, yticklabels=modulation_types, cbar=True, annot_kws={"size": 12, "fontproperties": times_font})
 
 # 设置横纵坐标刻度字体大小
@@ -147,39 +144,8 @@ ax.set_yticklabels(ax.get_yticklabels(), fontproperties=times_font, fontsize=16)
 # 设置横纵坐标标签和标题，并指定字体大小
 plt.xlabel("预测标签", fontsize=20, fontproperties=simsun_font)
 plt.ylabel("真实标签", fontsize=20, fontproperties=simsun_font)
-# plt.title("复杂分类任务混淆矩阵", fontsize=16)
-
-
-# # 生成混淆矩阵并转为百分比（这里是按总样本数）
-# cm = confusion_matrix(all_labels, all_preds)
-# cm_percent = cm / cm.sum(axis=1, keepdims=True)
-#
-# # 格式化成字符串百分比（保留两位小数）
-# cm_percent_str = np.array([["{:.1%}".format(value) for value in row] for row in cm_percent])
-#
-# # 可视化
-# plt.figure(figsize=(10, 8))
-# ax = sns.heatmap(
-#     cm_percent,                  # 显示百分比矩阵
-#     annot=cm_percent_str,        # 显示格式化字符串
-#     fmt="",                      # 不使用默认格式
-#     cmap='Blues',
-#     xticklabels=modulation_types,
-#     yticklabels=modulation_types,
-#     cbar=False,
-#     annot_kws={"size": 12, "fontproperties": times_font}       # 设置格子内字体大小
-# )
-#
-# # 设置坐标轴刻度字体
-# ax.set_xticklabels(ax.get_xticklabels(), fontproperties=times_font, fontsize=16)
-# ax.set_yticklabels(ax.get_yticklabels(), fontproperties=times_font, fontsize=16)
-#
-# # 设置坐标轴标签
-# plt.xlabel("预测标签", fontsize=20, fontproperties=simsun_font)
-# plt.ylabel("真实标签", fontsize=20, fontproperties=simsun_font)
-
+plt.title("分类任务混淆矩阵", fontsize=16)
 
 # 保存图像
-# plt.savefig('24_hunxiao2.png', dpi=600, bbox_inches='tight')
-plt.savefig('11_hunxiao2.png', dpi=600, bbox_inches='tight')
+plt.savefig('hunxiao.png', dpi=300, bbox_inches='tight')
 plt.show()
