@@ -14,7 +14,6 @@ from module.Tradition_module import ResNet18, ResNet50, VGG, CNN, L_CNN, LR_CNN,
 from module.signal_DAE import DAE_Res_fusion, DAE_Res_fusion2, DAE_Res_fusion_resnet, LSTM_CNN_SAM
 from module.signal_DAE_conv2d import DAE_Res_fusion3
 
-# modulation_types = ['OOK', '4ASK', 'BPSK', 'QPSK', '8PSK', '16QAM', 'AM-SSB-SC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
 modulation_types = ['OOK', '4ASK', '8ASK', 'BPSK', 'QPSK', '8PSK', '16PSK', '32PSK', '16APSK', '32APSK', '64APSK', '128APSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', 'AM-SSB-WC', 'AM-SSB-SC', 'AM-DSB-WC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
 log_file = 'training_log.txt'
 
@@ -336,7 +335,6 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = LSTM_CNN_SAM(num_classes=24, lstm_layers=2).to(device) #24分类任务
-    # model = LSTM_CNN_SAM(num_classes=11, lstm_layers=2).to(device) #11分类任务
 
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
