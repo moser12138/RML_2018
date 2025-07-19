@@ -12,8 +12,6 @@ from torch.utils.data import Dataset
 import numpy as np
 
 from module.signal_DAE import DAE_Res_fusion, DAE_Res_fusion2, DAE_Res_fusion_resnet, LSTM_CNN_SAM
-
-# modulation_types = ['OOK', '4ASK', 'BPSK', 'QPSK', '8PSK', '16QAM', 'AM-SSB-SC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
 modulation_types = ['OOK', '4ASK', '8ASK', 'BPSK', 'QPSK', '8PSK', '16PSK', '32PSK', '16APSK', '32APSK', '64APSK', '128APSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', 'AM-SSB-WC', 'AM-SSB-SC', 'AM-DSB-WC', 'AM-DSB-SC', 'FM', 'GMSK', 'OQPSK']
 log_file = 'eval_log.txt'
 
@@ -81,9 +79,6 @@ class DualModalityDataset(Dataset):
         return modulation_types.index(label)
 
 def validate(model, device, test_loader, criterion, model_path='best_model_grame.pth'):
-# def validate(model, device, test_loader, criterion, model_path='CNN_LSTM_SAM_58_31.pth'):
-# def validate(model, device, test_loader, criterion, model_path='./result/11classes/CNN_LSTM_SAM/CNN_LSTM_SAM_58_19.pth'):
-
 
     # 如果提供了模型路径，则加载模型参数
     if model_path:
@@ -221,7 +216,6 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=1024, shuffle=False)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = LSTM_CNN_SAM(num_classes=24, lstm_layers=2).to(device)
-    # model = LSTM_CNN_SAM(num_classes=11, lstm_layers=2).to(device)
     classifier_criterion = nn.CrossEntropyLoss()
     validate(model, device, test_loader, classifier_criterion)
 
